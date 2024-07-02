@@ -70,7 +70,7 @@ public class DatabaseCLI {
             }
 
             client.close();
-        } catch (IOException e) {
+        } catch (IOException | DatabaseException e) {
             System.err.println("Error: " + e.getMessage());
         }
     }

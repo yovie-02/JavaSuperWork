@@ -14,6 +14,8 @@ public class DatabaseServer {
 
     public void start() throws IOException {
         System.out.println("Database server started on port " + serverSocket.getLocalPort());
+        WALManager walManager = new WALManager();
+        walManager.recover(database);
         while (true) {
             new ClientHandler(serverSocket.accept(), database).start();
         }

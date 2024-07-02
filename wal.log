@@ -1,0 +1,4 @@
+CREATE,name1,yyy
+CREATE,name2,zhangsan
+READ,name,null
+READ,name1,null

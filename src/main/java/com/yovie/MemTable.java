@@ -25,4 +25,8 @@ public class MemTable {
     public int size() {
         return table.size();
     }
+
+    public void delete(String key) {
+        table.put(key, null);
+    }
 }

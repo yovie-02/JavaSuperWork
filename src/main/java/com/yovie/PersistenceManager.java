@@ -9,8 +9,13 @@ public class PersistenceManager {
     private File currentFile;
     private FileOutputStream fos;
 
+    public PersistenceManager() throws IOException {
+        currentFile = new File("current.db");
+        fos = new FileOutputStream(currentFile, true);
+    }
+
     public void write(String key, String value) throws IOException {
-        String entry = key + ":" + value + "\n";
+        String entry = key + ":" + (value != null ? value : "null") + "\n";
         fos.write(entry.getBytes());
         if (currentFile.length() > MAX_FILE_SIZE) {
             rotate();

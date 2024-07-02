@@ -8,10 +8,17 @@ public class DatabaseClient {
     private PrintWriter out;
     private BufferedReader in;
 
+    private LSMTree lsmTree;
+    private WALManager walManager;
+    private PersistenceManager persistenceManager;
+
     public DatabaseClient(String host, int port) throws IOException {
         socket = new Socket(host, port);
         out = new PrintWriter(socket.getOutputStream(), true);
         in = new BufferedReader(new InputStreamReader(socket.getInputStream()));
+        lsmTree = new LSMTree();
+        walManager = new WALManager();
+        persistenceManager = new PersistenceManager();
     }
 
     public String sendCommand(String command) throws IOException {
@@ -26,19 +33,47 @@ public class DatabaseClient {
     }
 
     // API 方法
-    public String create(String key, String value) throws IOException {
+    public String create(String key, String value) throws IOException, DatabaseException {
+        try {
+            walManager.logOperation("CREATE", key, value);
+            lsmTree.put(key, value);
+            persistenceManager.write(key, value);
+        } catch (IOException e) {
+            throw new DatabaseException("Failed to create: " + e.getMessage());
+        }
         return sendCommand("CREATE " + key + " " + value);
     }
 
-    public String read(String key) throws IOException {
+    public String read(String key) throws IOException, DatabaseException {
+        try {
+            walManager.logOperation("READ", key, null);
+            lsmTree.get(key);
+            persistenceManager.write(key, null);
+        } catch (Exception e) {
+            throw new DatabaseException("Failed to read: " + e.getMessage());
+        }
         return sendCommand("READ " + key);
     }
 
-    public String update(String key, String value) throws IOException {
+    public String update(String key, String value) throws IOException, DatabaseException {
+        try {
+            walManager.logOperation("UPDATE", key, value);
+            lsmTree.put(key, value);
+            persistenceManager.write(key, value);
+        } catch (IOException e) {
+            throw new DatabaseException("Failed to update: " + e.getMessage());
+        }
         return sendCommand("UPDATE " + key + " " + value);
     }
 
-    public String delete(String key) throws IOException {
+    public String delete(String key) throws IOException, DatabaseException {
+        try {
+            walManager.logOperation("DELETE", key, null);
+            lsmTree.delete(key); // 假设 LSMTree 提供了 delete 方法
+            persistenceManager.write(key, null); // 写入 null 表示删除操作
+        } catch (IOException e) {
+            throw new DatabaseException("Failed to delete: " + e.getMessage());
+        }
         return sendCommand("DELETE " + key);
     }
 }
