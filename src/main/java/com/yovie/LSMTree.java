@@ -54,7 +54,7 @@ public class LSMTree {
         // 由于 SSTable 是不可变的，这里可以添加一个标记删除的逻辑
         // 例如，可以创建一个新的 MemTable 项来标记这个键已被删除
         // 这个标记可以是一个特殊的值，例如使用一个删除标记字符串，例如 "DELETED"
-        memTable.put(key, "DELETED");
+        //memTable.put(key, "DELETED");
 
         // 检查是否需要将 MemTable 刷新到磁盘
         if (memTable.size() > THRESHOLD) {

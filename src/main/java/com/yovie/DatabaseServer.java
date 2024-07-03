@@ -7,15 +7,19 @@ public class DatabaseServer {
     private ServerSocket serverSocket;
     private Databasedb database;
 
+    private Index index;
+
     public DatabaseServer(int port) throws IOException {
         serverSocket = new ServerSocket(port);
         database = new Databasedb();
+        index = new Index();
     }
 
     public void start() throws IOException {
         System.out.println("Database server started on port " + serverSocket.getLocalPort());
         WALManager walManager = new WALManager();
         walManager.recover(database);
+        walManager.recoverIndex(index);
         while (true) {
             new ClientHandler(serverSocket.accept(), database).start();
         }

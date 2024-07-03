@@ -15,6 +15,18 @@ public class WALManager {
         walStream.flush();
     }
 
+    public void logIndexOperation(String operation, String key, long position) throws IOException {
+        String logEntry = "INDEX_OP," + operation + "," + key + "," + position + "\n";
+        walStream.write(logEntry.getBytes());
+        walStream.flush();
+    }
+
+    public void logSearchOperation(String operation,String key) throws IOException {
+        String logEntry = "SEARCH_OP," + key + "\n";
+        walStream.write(logEntry.getBytes());
+        walStream.flush();
+    }
+
     public void recover(Databasedb db) throws IOException {
 //        try (BufferedReader reader = new BufferedReader(new FileReader("wal.log"))) {
 //            String line;
@@ -61,4 +73,41 @@ public class WALManager {
             }
         }
     }
+
+    public void recoverIndex(Index index) throws IOException {
+        try (BufferedReader reader = new BufferedReader(new FileReader("wal.log"))) {
+            String line;
+            while ((line = reader.readLine()) != null) {
+                if (line.startsWith("INDEX_OP,")) {
+                    String[] parts = line.substring("INDEX_OP,".length()).split(",");
+                    if (parts.length == 3) {
+                        String operation = parts[0];
+                        String key = parts[1];
+                        long position = Long.parseLong(parts[2]);
+
+                        if ("INDEX_ADD".equals(operation)) {
+                            index.addToIndex(key, position);
+                        }
+                        // 可以在这里添加更多的索引操作恢复逻辑
+                    }
+                } else if (line.startsWith("SEARCH_OP,")) {
+                    String[] parts = line.substring("SEARCH_OP,".length()).split(",");
+                    if(parts.length == 2){
+                        String operation = parts[0];
+                        String key = parts[1];
+
+                        if ("SEARCH_ADD".equals(operation)) {
+                            index.search(key);
+                        }
+                    }
+                    // 这里可以根据需要处理搜索操作的恢复逻辑
+                    // 例如，可以只是打印出来或者做其他的处理
+                    //System.out.println("Recovered search operation for key: " + key);
+                }
+            }
+        } catch (DatabaseException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
 }

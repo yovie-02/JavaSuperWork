@@ -74,7 +74,7 @@ public class DatabaseCLI {
             System.err.println("Error: " + e.getMessage());
         }
     }
-    private void addIndexEntry() throws IOException {
+    private void addIndexEntry() throws IOException, DatabaseException {
         System.out.print("Enter key for index: ");
         String key = userInput.readLine().trim();
         System.out.print("Enter position to add: ");
@@ -83,7 +83,7 @@ public class DatabaseCLI {
         System.out.println("Index entry added.");
     }
 
-    private void searchIndex() throws IOException {
+    private void searchIndex() throws IOException, DatabaseException {
         System.out.print("Enter key to search in index: ");
         String key = userInput.readLine().trim();
         List<Long> positions = index.search(key); // 搜索索引
