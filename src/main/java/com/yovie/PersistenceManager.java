@@ -5,7 +5,7 @@ import java.io.FileOutputStream;
 import java.io.*;
 
 public class PersistenceManager {
-    private static final long MAX_FILE_SIZE = 1024; // 100MB
+    private static final long MAX_FILE_SIZE = 1024;
     private File currentFile;
     private FileOutputStream fos;
 

@@ -4,13 +4,14 @@ import java.io.IOException;
 import java.util.*;
 
 public class Index {
-    private Map<String, List<Long>> index = new HashMap<>();
+    private Map<String, List<Long>> index;
 //    private LSMTree lsmTree;
     private WALManager walManager;
 //    private PersistenceManager persistenceManager;
 //
     public Index() throws IOException {
 //        lsmTree = new LSMTree();
+        index = new HashMap<>();
         walManager = new WALManager();
 //        persistenceManager = new PersistenceManager();
     }
@@ -23,8 +24,6 @@ public class Index {
             throw new DatabaseException("Failed to add index entry: " + e.getMessage());
         }
     }
-
-
     public List<Long> search(String key) throws DatabaseException {
         try {
             List<Long> positions = index.getOrDefault(key, Collections.emptyList());
@@ -33,5 +32,13 @@ public class Index {
         }catch (IOException e){
             throw new DatabaseException("Failed to search index entry: " + e.getMessage());
         }
+    }
+
+    public void read(String key,long position) {
+        index.computeIfAbsent(key, k -> new ArrayList<>()).add(position);
+    }
+
+    public boolean get(String key) {
+        return index.containsKey(key);
     }
 }

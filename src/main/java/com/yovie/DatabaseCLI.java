@@ -79,8 +79,12 @@ public class DatabaseCLI {
         String key = userInput.readLine().trim();
         System.out.print("Enter position to add: ");
         long position = Long.parseLong(userInput.readLine().trim());
-        index.addToIndex(key, position); // 添加到索引
-        System.out.println("Index entry added.");
+        if (index.get(key)) {
+            System.out.println("Key already exists in the index.");
+        } else {
+            index.addToIndex(key, position); // 添加到索引
+            System.out.println("Index entry added.");
+        }
     }
 
     private void searchIndex() throws IOException, DatabaseException {

@@ -22,7 +22,7 @@ public class WALManager {
     }
 
     public void logSearchOperation(String operation,String key) throws IOException {
-        String logEntry = "SEARCH_OP," + key + "\n";
+        String logEntry = "SEARCH_OP,"+ operation + "," + key + "\n";
         walStream.write(logEntry.getBytes());
         walStream.flush();
     }
@@ -86,7 +86,7 @@ public class WALManager {
                         long position = Long.parseLong(parts[2]);
 
                         if ("INDEX_ADD".equals(operation)) {
-                            index.addToIndex(key, position);
+                            index.read(key,position);
                         }
                         // 可以在这里添加更多的索引操作恢复逻辑
                     }
@@ -96,8 +96,9 @@ public class WALManager {
                         String operation = parts[0];
                         String key = parts[1];
 
-                        if ("SEARCH_ADD".equals(operation)) {
-                            index.search(key);
+                        if ("INDEX_SEARCH".equals(operation)) {
+//                            index.search(key);
+                            continue;
                         }
                     }
                     // 这里可以根据需要处理搜索操作的恢复逻辑
@@ -105,8 +106,6 @@ public class WALManager {
                     //System.out.println("Recovered search operation for key: " + key);
                 }
             }
-        } catch (DatabaseException e) {
-            throw new RuntimeException(e);
         }
     }
 
