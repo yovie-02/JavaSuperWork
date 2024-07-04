@@ -69,7 +69,7 @@ public class DatabaseClient {
     public String delete(String key) throws IOException, DatabaseException {
         try {
             walManager.logOperation("DELETE", key, null);
-            lsmTree.delete(key); // 假设 LSMTree 提供了 delete 方法
+            lsmTree.delete(key);
             persistenceManager.write(key, null); // 写入 null 表示删除操作
         } catch (IOException e) {
             throw new DatabaseException("Failed to delete: " + e.getMessage());

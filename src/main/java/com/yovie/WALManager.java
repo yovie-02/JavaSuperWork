@@ -21,41 +21,19 @@ public class WALManager {
         walStream.flush();
     }
 
-    public void logSearchOperation(String operation,String key) throws IOException {
-        String logEntry = "SEARCH_OP,"+ operation + "," + key + "\n";
+    public void logSearchOperation(String operation, String key) throws IOException {
+        String logEntry = "SEARCH_OP," + operation + "," + key + "\n";
         walStream.write(logEntry.getBytes());
         walStream.flush();
     }
 
     public void recover(Databasedb db) throws IOException {
-//        try (BufferedReader reader = new BufferedReader(new FileReader("wal.log"))) {
-//            String line;
-//            while ((line = reader.readLine()) != null) {
-//                String[] parts = line.split(",");
-//                if (parts.length != 3) {
-//                    continue; // 跳过格式不正确的日志条目
-//                }
-//                String operation = parts[0];
-//                String key = parts[1];
-//                String value = parts[2];
-//
-//                switch (operation.toUpperCase()) {
-//                    case "CREATE":
-//                    case "UPDATE":
-//                        db.create(key, value);
-//                        break;
-//                    case "DELETE":
-//                        db.delete(key);
-//                        break;
-//                }
-//            }
-//        }
         try (BufferedReader reader = new BufferedReader(new FileReader("wal.log"))) {
             String line;
             while ((line = reader.readLine()) != null) {
                 String[] parts = line.split(",");
                 if (parts.length != 3) {
-                    continue; // 跳过格式不正确的日志条目
+                    continue;
                 }
                 String operation = parts[0];
                 String key = parts[1];
@@ -86,13 +64,13 @@ public class WALManager {
                         long position = Long.parseLong(parts[2]);
 
                         if ("INDEX_ADD".equals(operation)) {
-                            index.read(key,position);
+                            index.read(key, position);
                         }
                         // 可以在这里添加更多的索引操作恢复逻辑
                     }
                 } else if (line.startsWith("SEARCH_OP,")) {
                     String[] parts = line.substring("SEARCH_OP,".length()).split(",");
-                    if(parts.length == 2){
+                    if (parts.length == 2) {
                         String operation = parts[0];
                         String key = parts[1];
 
@@ -101,9 +79,6 @@ public class WALManager {
                             continue;
                         }
                     }
-                    // 这里可以根据需要处理搜索操作的恢复逻辑
-                    // 例如，可以只是打印出来或者做其他的处理
-                    //System.out.println("Recovered search operation for key: " + key);
                 }
             }
         }

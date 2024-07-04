@@ -5,15 +5,12 @@ import java.util.*;
 
 public class Index {
     private Map<String, List<Long>> index;
-//    private LSMTree lsmTree;
+
     private WALManager walManager;
-//    private PersistenceManager persistenceManager;
-//
+
     public Index() throws IOException {
-//        lsmTree = new LSMTree();
         index = new HashMap<>();
         walManager = new WALManager();
-//        persistenceManager = new PersistenceManager();
     }
 
     public void addToIndex(String key, long position) throws DatabaseException {
