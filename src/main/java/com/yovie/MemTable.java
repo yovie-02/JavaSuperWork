@@ -5,7 +5,7 @@ import java.util.concurrent.ConcurrentHashMap;
 
 public class MemTable {
     private ConcurrentHashMap<String, String> table;
-    private ConcurrentHashMap<String, Boolean> deletedKeys;
+    public ConcurrentHashMap<String, Boolean> deletedKeys;
 
     public MemTable() {
         table = new ConcurrentHashMap<>();

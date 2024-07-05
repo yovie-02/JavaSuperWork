@@ -31,6 +31,31 @@ public class LSMTree {
 
     private void compactSSTables() {
         // 实现 SSTable 合并逻辑
+        List<SSTable> sstablesToCompact = new ArrayList<>(ssTables);
+
+        // 创建一个Map来存储合并后的数据
+        Map<String, String> mergedData = new TreeMap<>();
+
+        // 读取每个SSTable并合并数据
+        for (SSTable ssTable : sstablesToCompact) {
+            ssTable.readFromDisk(); // 确保SSTable数据是最新的
+            for (Map.Entry<String, String> entry : ssTable.data.entrySet()) {
+                // 如果键已经被删除，则跳过
+                if (memTable.deletedKeys.containsKey(entry.getKey())) {
+                    continue;
+                }
+                // 将键值对添加到合并数据中，如果有重复的键，新的值会覆盖旧的值
+                mergedData.put(entry.getKey(), entry.getValue());
+            }
+        }
+
+        // 创建一个新的SSTable并写入合并后的数据
+        SSTable newSSTable = new SSTable(mergedData);
+        newSSTable.writeDataToDisk();
+
+        // 将新的SSTable添加到列表，并删除旧的SSTable
+        ssTables.clear();
+        ssTables.add(newSSTable);
     }
 
     public String get(String key) {

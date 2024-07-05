@@ -4,7 +4,7 @@ import java.io.*;
 import java.util.*;
 
 public class SSTable {
-    private Map<String, String> data;
+    public Map<String, String> data;
     private String filePath;
 
     public SSTable(Map<String, String> data) {
@@ -13,7 +13,7 @@ public class SSTable {
         writeDataToDisk();
     }
 
-    private void writeDataToDisk() {
+    public void writeDataToDisk() {
         try (ObjectOutputStream out = new ObjectOutputStream(new FileOutputStream(filePath))) {
             out.writeObject(data);
         } catch (IOException e) {
@@ -33,6 +33,4 @@ public class SSTable {
             e.printStackTrace();
         }
     }
-
-    // 其他可能的方法，例如，删除特定的键或合并SSTable等
 }

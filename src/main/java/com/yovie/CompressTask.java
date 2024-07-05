@@ -8,7 +8,6 @@ import java.util.zip.GZIPOutputStream;
 public class CompressTask implements Runnable {
     private static ExecutorService executor = Executors.newFixedThreadPool(5);
     private File file;
-    private WALManager walManager;
 
     public CompressTask(File file) {
         this.file = file;
@@ -30,13 +29,9 @@ public class CompressTask implements Runnable {
             }
         } catch (IOException e) {
             e.printStackTrace();
-        } finally {
-            file.delete();
-            try {
-                walManager = new WALManager();
-            } catch (IOException e) {
-                throw new RuntimeException(e);
-            }
         }
+//        finally {
+//            file.delete();
+//        }
     }
 }
